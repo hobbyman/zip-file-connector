@@ -64,6 +64,7 @@ public class Script : ScriptBase
     private async Task<HttpResponseMessage> CreateZip()
     {
         var contentAsString = await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false);
+        HttpResponseMessage response;
 
         JArray textArray = JArray.Parse(contentAsString);
         JArray arrayForZipping = new JArray();
@@ -82,10 +83,10 @@ public class Script : ScriptBase
                 arrayForZipping.Add(fileObject);
             }
         }
-        if (arrayForZipping.Length>0)
+        if (arrayForZipping.Count>0)
         {
             byte[] zipBytes = createZipFromArray(arrayForZipping).ToArray();
-            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new ByteArrayContent(zipBytes);
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
@@ -96,7 +97,7 @@ public class Script : ScriptBase
         }
 
         // Handle an invalid operation ID
-        HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        response = new HttpResponseMessage(HttpStatusCode.BadRequest);
         response.Content = CreateJsonContent($"Unknown operation ID '{this.Context.OperationId}'");
         return response;
 
