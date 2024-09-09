@@ -32,12 +32,12 @@ public class Script : ScriptBase
             case "Test":
                 return await Test().ConfigureAwait(false);
                 break;
-            case "CreateCompletion":
+            case "CreateZip":
                 return await CreateZip().ConfigureAwait(false);
                 break;
-            case "ChatCompletion":
-                return await ExtractZip().ConfigureAwait(false);
-                break;
+            // case "ExtractZip":
+            //     return await ExtractZip().ConfigureAwait(false);
+            //     break;
             default:
                 break;
         }
@@ -64,110 +64,166 @@ public class Script : ScriptBase
     private async Task<HttpResponseMessage> CreateZip()
     {
         var contentAsString = await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false);
-    }
-    private async Task<HttpResponseMessage> ExtractZip()
+
+        JArray textArray = JArray.Parse(contentAsString);
+        JArray arrayForZipping = new JArray();
+        foreach (JObject item in textArray)
+        {
+            string filename;
+            string content;
+            if ( item.ContainsKey("filename") && item.ContainsKey("content") ) {
+                filename = item.GetValue("filename").ToString();
+                content = item.GetValue("content").ToString();
+                // Console.WriteLine($"{name} == [{content}]");
+                JObject fileObject = new JObject(
+                    new JProperty("filename", filename),
+                    new JProperty("content", content)
+                );
+                arrayForZipping.Add(fileObject);
+            }
+        }
+        if (arrayForZipping.Length>0)
+        {
+            byte[] zipBytes = createZipFromArray(arrayForZipping).ToArray();
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new ByteArrayContent(zipBytes);
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = "Zip-File-Connector-Resulting.zip"
+            };
+            return response;
+        }
+
+        // Handle an invalid operation ID
+        HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+        response.Content = CreateJsonContent($"Unknown operation ID '{this.Context.OperationId}'");
+        return response;
+
+
+    }//end of CreateZip
+
+    MemoryStream createZipFromArray(JArray fileArray)
     {
-    }
 
-        // private string ConvertCsvToJsonObject(string csvText, bool trimEntries, bool skipBlankEntries, string separator)
-        // {
-        //     var lines = csvText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-        //     // var properties = lines[0].Split(',');
-        //     char localSep = separator.ToCharArray()[0];
-        //     var properties = lines[0].Split(localSep);
-        //     for (int j = 0; j < properties.Length; j++) {
-        //         properties[j] = properties[j].Trim();
-        //     }
+        using var outStream = new MemoryStream();
+        using (var archive = new System.IO.Compression.ZipArchive(outStream, System.IO.Compression.ZipArchiveMode.Create, true))
+        {
+            foreach (JObject item in fileArray)
+            {
+                var fileInArchive = archive.CreateEntry(item.GetValue("filename").ToString(), System.IO.Compression.CompressionLevel.Optimal);
+                using var entryStream = fileInArchive.Open();
+                // using var fileToCompressStream = new MemoryStream((byte[])item.GetValue("contents"));
+                using var fileToCompressStream = new MemoryStream(Convert.FromBase64String(item.GetValue("content").ToString()));
+                fileToCompressStream.CopyTo(entryStream);
+            }
+        }
+        return outStream;
+    }//--end of createZipFromArray
 
-        //     foreach (string line in lines.Skip(1)) {
-        //         if(insideQuotation || !string.IsNullOrWhiteSpace(line)) {
-        //             // ScanNextLine(line);
-        //             ScanNextLine(line, separator);
-        //         }
-        //     }
+    // private async Task<HttpResponseMessage> ExtractZip()
+    // {
+    // }
 
-        //     var listObjResult = new List<Dictionary<string, string>>();
+    // private string ConvertCsvToJsonObject(string csvText, bool trimEntries, bool skipBlankEntries, string separator)
+    // {
+    //     var lines = csvText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+    //     // var properties = lines[0].Split(',');
+    //     char localSep = separator.ToCharArray()[0];
+    //     var properties = lines[0].Split(localSep);
+    //     for (int j = 0; j < properties.Length; j++) {
+    //         properties[j] = properties[j].Trim();
+    //     }
 
-        //     foreach(var entry in entries) {
-        //         var emptyLine = true;
-        //         var objResult = new Dictionary<string, string>();
-        //         for (int j = 0; j < properties.Length; j++) {
-        //             var value = entry[j];
+    //     foreach (string line in lines.Skip(1)) {
+    //         if(insideQuotation || !string.IsNullOrWhiteSpace(line)) {
+    //             // ScanNextLine(line);
+    //             ScanNextLine(line, separator);
+    //         }
+    //     }
 
-        //             objResult.Add(properties[j], value);
-        //             if(!string.IsNullOrWhiteSpace(value)) {
-        //                 emptyLine = false;
-        //             }
-        //         }
+    //     var listObjResult = new List<Dictionary<string, string>>();
 
-        //         if(!emptyLine || !skipBlankEntries) {
-        //             listObjResult.Add(objResult);
-        //         }
-        //     }
+    //     foreach(var entry in entries) {
+    //         var emptyLine = true;
+    //         var objResult = new Dictionary<string, string>();
+    //         for (int j = 0; j < properties.Length; j++) {
+    //             var value = entry[j];
 
-        //     return JsonConvert.SerializeObject(listObjResult);
-        // }
+    //             objResult.Add(properties[j], value);
+    //             if(!string.IsNullOrWhiteSpace(value)) {
+    //                 emptyLine = false;
+    //             }
+    //         }
 
-        // private void ScanNextLine(string line, string separator)
-        // {
-        //     char localSep = separator.ToCharArray()[0];
-        //     // At the beginning of the line
-        //     if (!insideQuotation)
-        //     {
-        //         entries.Add(new List<string>());
-        //     }
+    //         if(!emptyLine || !skipBlankEntries) {
+    //             listObjResult.Add(objResult);
+    //         }
+    //     }
 
-        //     // The characters of the line
-        //     foreach (char c in line)
-        //     {
-        //         if (insideQuotation)
-        //         {
-        //             if (c == '"')
-        //             {
-        //                 insideQuotation = false;
-        //             }
-        //             else
-        //             {
-        //                 currentEntry += c;
-        //             }
-        //         }
-        //         // else if (c == ',')
-        //         else if (c == localSep)
-        //         {
-        //             entries[entries.Count - 1].Add(currentEntry);
-        //             currentEntry = "";
-        //         }
-        //         else if (c == '"')
-        //         {
-        //             insideQuotation = true;
-        //         }
-        //         else
-        //         {
-        //             currentEntry += c;
-        //         }
-        //     }
+    //     return JsonConvert.SerializeObject(listObjResult);
+    // }
 
-        //     // At the end of the line
-        //     if (!insideQuotation)
-        //     {
-        //         entries[entries.Count - 1].Add(currentEntry);
-        //         currentEntry = "";
-        //     }
-        //     else
-        //     {
-        //         currentEntry += "\n";
-        //     }
-        // }
+    // private void ScanNextLine(string line, string separator)
+    // {
+    //     char localSep = separator.ToCharArray()[0];
+    //     // At the beginning of the line
+    //     if (!insideQuotation)
+    //     {
+    //         entries.Add(new List<string>());
+    //     }
 
-        // private static string GetHeaderString(HttpHeaders headers, string name)
-        // {
-        //         IEnumerable<string> values;
+    //     // The characters of the line
+    //     foreach (char c in line)
+    //     {
+    //         if (insideQuotation)
+    //         {
+    //             if (c == '"')
+    //             {
+    //                 insideQuotation = false;
+    //             }
+    //             else
+    //             {
+    //                 currentEntry += c;
+    //             }
+    //         }
+    //         // else if (c == ',')
+    //         else if (c == localSep)
+    //         {
+    //             entries[entries.Count - 1].Add(currentEntry);
+    //             currentEntry = "";
+    //         }
+    //         else if (c == '"')
+    //         {
+    //             insideQuotation = true;
+    //         }
+    //         else
+    //         {
+    //             currentEntry += c;
+    //         }
+    //     }
 
-        //         if (headers.TryGetValues(name, out values))
-        //         {
-        //             return values.FirstOrDefault();
-        //         }
+    //     // At the end of the line
+    //     if (!insideQuotation)
+    //     {
+    //         entries[entries.Count - 1].Add(currentEntry);
+    //         currentEntry = "";
+    //     }
+    //     else
+    //     {
+    //         currentEntry += "\n";
+    //     }
+    // }
 
-        //         return null;
-        // }
-    }
+    // private static string GetHeaderString(HttpHeaders headers, string name)
+    // {
+    //         IEnumerable<string> values;
+
+    //         if (headers.TryGetValues(name, out values))
+    //         {
+    //             return values.FirstOrDefault();
+    //         }
+
+    //         return null;
+    // }
+}
