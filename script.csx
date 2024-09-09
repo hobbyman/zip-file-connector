@@ -30,13 +30,13 @@ public class Script : ScriptBase
         switch (Context.OperationId)
         {
             case "Test":
-                return await CreateZip().ConfigureAwait(false);
+                return await Test().ConfigureAwait(false);
                 break;
             case "CreateCompletion":
                 return await CreateZip().ConfigureAwait(false);
                 break;
             case "ChatCompletion":
-                return await ProcessChatCompletion().ConfigureAwait(false);
+                return await ExtractZip().ConfigureAwait(false);
                 break;
             default:
                 break;
