@@ -1,0 +1,53 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "My Cars definition\n",
+    "version": "1.0.0",
+    "title": "Cars"
+  },
+  "paths": {
+    "/postMyCars": {
+      "post": {
+        "summary": "Post my cars in!",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "File Array",
+            "in": "body",
+            "description": "List of file names and content to create zip file",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "filename",
+                  "content"
+                ],
+                "properties": {
+                  "filename": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cars OK"
+          }
+        }
+      }
+    }
+  },
+  "schemes": [
+    "https",
+    "http"
+  ]
+}

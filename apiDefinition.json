@@ -1,0 +1,130 @@
+{
+	"swagger" : "2.0",
+	"info" : {
+		"title" : "Zip File Utilities",
+		"description" : "",
+		"version" : "1.0"
+	},
+	"host" : "api.contoso.com",
+	"basePath" : "/",
+	"schemes" : [ "https" ],
+	"consumes" : [],
+	"produces" : [],
+	"paths" : {
+		"/createzip" : {
+			"post" : {
+				"responses" : {
+					"default" : {
+						"description" : "A Zip File",
+						"schema" : {
+							"type" : "string",
+							"format" : "binary",
+							"description" : "Binary content of the zip file.",
+							"title" : "File Content",
+							"x-ms-visibility" : "important"
+						}
+					}
+				},
+				"summary" : "Create Zip File",
+				"description" : "Create zip file from the argument file(s)",
+				"operationId" : "CreateZip",
+				"parameters" : [
+					{
+						"name" : "File Array",
+						"in" : "body",
+						"description" : "List of file names and content to create zip file",
+						"required" : true,
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "object",
+								"required" : [ "filename", "content" ],
+								"properties" : {
+									"filename" : {
+										"type" : "string"
+									},
+									"content" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					}
+				]
+			}
+		},
+		"/test" : {
+			"post" : {
+				"responses" : {
+					"default" : {
+						"description" : "A Zip File",
+						"schema" : {
+							"type" : "string",
+							"format" : "binary",
+							"description" : "Binary content of the zip file.",
+							"title" : "File Content",
+							"x-ms-visibility" : "important"
+						}
+					}
+				},
+				"summary" : "Test",
+				"description" : "Test",
+				"operationId" : "Test",
+				"parameters" : [
+					{
+						"name" : "File Array",
+						"in" : "body",
+						"description" : "List of file names and content to create zip file",
+						"required" : true,
+						"schema" : {
+							"type" : "array",
+							"items" : {
+								"type" : "object",
+								"required" : [ "filename", "content" ],
+								"properties" : {
+									"filename" : {
+										"type" : "string"
+									},
+									"content" : {
+										"type" : "string"
+									}
+								}
+							}
+						}
+					}
+				]
+			}
+		},
+		"/extractzip" : {
+			"post" : {
+				"responses" : {
+					"default" : {
+						"description" : "default",
+						"schema" : {
+							"description" : "Converted object",
+							"title" : "Output",
+							"x-ms-visibility" : "important"
+						}
+					}
+				},
+				"summary" : "Extract zip file contents",
+				"description" : "Pass in zip contents, file contents returned",
+				"operationId" : "ExtractZip",
+				"parameters" : [
+					{
+						"name" : "Zip File Contents",
+						"in" : "body",
+						"required" : true,
+						"schema" : {}
+					}
+				]
+			}
+		}
+	},
+	"definitions" : {},
+	"parameters" : {},
+	"responses" : {},
+	"securityDefinitions" : {},
+	"security" : [],
+	"tags" : []
+}

@@ -1,0 +1,56 @@
+{
+   "swagger":"2.0",
+   "info":{
+      "description":"My Cars definition\n",
+      "version":"1.0.0",
+      "title":"Cars"
+   },
+   "paths":{
+      "/postMyCars":{
+         "post":{
+            "summary":"Post my cars in!",
+            "consumes":[
+               "application/json"
+            ],
+            "parameters":[
+               {
+                  "name":"cars",
+                  "in":"body",
+                  "description":"Cars to add to the system",
+                  "required":true,
+                  "schema":{
+                     "type":"array",
+                     "items":{
+                        "type":"object",
+                        "required":[
+                           "name",
+                           "items"
+                        ],
+                        "properties":{
+                           "name":{
+                              "type":"string"
+                           },
+                           "models":{
+                              "type":"array",
+                              "items":{
+                                 "type":"string"
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            ],
+            "responses":{
+               "200":{
+                  "description":"Cars OK"
+               }
+            }
+         }
+      }
+   },
+   "schemes":[
+      "https",
+      "http"
+   ]
+}

@@ -1,0 +1,10 @@
+{
+  "properties": {
+    "connectionParameters": {},
+    "iconBrandColor": "#ffffff",
+    "capabilities": [],
+    "scriptOperations": ["CreateZip", "ExtractZip"],
+    "publisher": "Lance Perry",
+    "stackOwner": "Lance Perry"
+  }
+}
