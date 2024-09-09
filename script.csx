@@ -52,7 +52,7 @@ public class Script : ScriptBase
         var contentAsString = await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false);
         JArray textArray = JArray.Parse(contentAsString);
 
-        response = new HttpResponseMessage(HttpStatusCode.OK);
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
         response.Content = CreateJsonContent(new JObject
         {
             ["data"] = textArray
