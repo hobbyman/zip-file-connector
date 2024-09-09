@@ -49,6 +49,15 @@
 								}
 							}
 						}
+					},
+					{
+						"name" : "x-zip-file-name",
+						"in" : "header",
+						"required" : "true",
+						"type" : "string",
+						"x-ms-summary" : "Zip File Name",
+						"default" : "output.zip",
+						"description" : "Zip File Name"
 					}
 				]
 			}
@@ -91,6 +100,15 @@
 								}
 							}
 						}
+					},
+					{
+						"name" : "x-zip-file-name",
+						"in" : "header",
+						"required" : "true",
+						"type" : "string",
+						"x-ms-summary" : "Zip File Name",
+						"default" : "output.zip",
+						"description" : "Zip File Name"
 					}
 				]
 			}

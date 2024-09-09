@@ -64,6 +64,13 @@ public class Script : ScriptBase
     private async Task<HttpResponseMessage> CreateZip()
     {
         var contentAsString = await this.Context.Request.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        string zipFileName = (string)this.Context.Request.Headers.GetValues("x-zip-file-name").FirstOrDefault();
+        if (string.IsNullOrEmpty(zipFileName))
+        {
+            zipFileName = "output.zip";
+        }
+
         HttpResponseMessage response;
 
         JArray textArray = JArray.Parse(contentAsString);
@@ -91,7 +98,7 @@ public class Script : ScriptBase
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/zip");
             response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
             {
-                FileName = "Zip-File-Connector-Resulting.zip"
+                FileName = zipFileName
             };
             return response;
         }
