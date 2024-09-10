@@ -4,32 +4,6 @@ This is simple code-based connector where the method is entirely contained withi
 
 Purpose of the connector is to take is zip file manipulations from Power Automate.
 
-There are 2 methods:
-* <mark>CreateZip</mark>
-* <mark>ExtractZip</mark> (not yet implemented)
-
-
-
-## CreateZip Parameters
-
-* File Array - string - example below
-```
-[
-    {
-        "filename" : "blah.txt",
-        "content"  : "base64-encoding-of-the-file"
-    },
-    {
-        "filename" : "whatever.jpg",
-        "content"  : "base64-encoding-of-the-file"
-    }
-]
-```
-* Zip File Name - string - what it says
-
-### Getting the base64 encoding of a file in Sharepoint
-Go to this [nice article](https://manueltgomes.com/reference/power-automate-action-reference/sharepoint-get-file-content-action/) for start. Basically, you need to get the output of **Get file content** into a variable or compose. BUT, pay attention, you need to get the **$content**; that's what will need to go into the **content** property in the **File Array**
-
 <!--
 ## Installation
 
@@ -77,7 +51,36 @@ What do you need?
 
 -->
 
-#### URLs used for my discovery and testing
+
+## Methods
+* <mark>CreateZip</mark>
+* <mark>ExtractZip</mark> (not yet implemented)
+
+
+
+### CreateZip Parameters
+
+* File Array - string - example below
+```
+[
+    {
+        "filename" : "blah.txt",
+        "content"  : "base64-encoding-of-the-file"
+    },
+    {
+        "filename" : "whatever.jpg",
+        "content"  : "base64-encoding-of-the-file"
+    }
+]
+```
+* Zip File Name - string - what it says
+
+#### Getting the base64 encoding of a file in Sharepoint
+Go to this [nice article](https://manueltgomes.com/reference/power-automate-action-reference/sharepoint-get-file-content-action/) for start. Basically, you need to get the output of **Get file content** into a variable or compose. BUT, pay attention, you need to get the **$content**; that's what will need to go into the **content** property in the **File Array**
+
+
+
+## URLs used for my discovery and testing
 - MemoryStream from Base64 - https://stackoverflow.com/a/31524620
     - also, https://stackoverflow.com/a/25919641
 - JObject/JPropery - https://www.codeproject.com/Questions/5257437/Dynamically-keep-adding-jarray-value-to-jobject
